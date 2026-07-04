@@ -1,0 +1,18 @@
+{
+  "bigdog": {
+    "sounds": [
+      {
+        "name": "bigdogbark:bigdog",
+        "stream": false
+      }
+    ]
+  },
+  "bark": {
+    "sounds": [
+      {
+        "name": "bigdogbark:bark",
+        "stream": false
+      }
+    ]
+  }
+}

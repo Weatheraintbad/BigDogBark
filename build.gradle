@@ -1,0 +1,131 @@
+plugins {
+    id 'fabric-loom' version '1.15.5' apply false
+}
+
+def targets = [
+        'fabric-1.20.1': [
+                minecraft: '1.20.1',
+                yarn     : '1.20.1+build.10',
+                mixin    : 'JAVA_17',
+                java     : 17
+        ],
+        'fabric-1.21.1': [
+                minecraft: '1.21.1',
+                yarn     : '1.21.1+build.3',
+                mixin    : 'JAVA_21',
+                java     : 21
+        ]
+]
+
+allprojects {
+    group = property('maven_group')
+    version = property('mod_version')
+}
+
+subprojects {
+    def target = targets[project.name]
+
+    apply plugin: 'fabric-loom'
+    apply plugin: 'java'
+
+    base {
+        archivesName = "${rootProject.property('archives_base_name')}-${target.minecraft}"
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        withSourcesJar()
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = [
+                        "${rootProject.projectDir}/common/src/main/java",
+                        'src/main/java'
+                ]
+            }
+            resources {
+                srcDirs = [
+                        "${rootProject.projectDir}/common/src/main/resources",
+                        'src/main/resources'
+                ]
+            }
+        }
+    }
+
+    loom {
+        runs {
+            client {
+                client()
+                setConfigName("Minecraft Client ${target.minecraft}")
+                ideConfigGenerated(true)
+                runDir("../../run/${target.minecraft}")
+            }
+        }
+    }
+
+    dependencies {
+        minecraft "com.mojang:minecraft:${target.minecraft}"
+        mappings "net.fabricmc:yarn:${target.yarn}:v2"
+        modImplementation "net.fabricmc:fabric-loader:${rootProject.property('loader_version')}"
+    }
+
+    processResources {
+        inputs.property 'version', project.version
+        inputs.property 'minecraft_version', target.minecraft
+        inputs.property 'loader_dependency', rootProject.property('loader_dependency')
+        inputs.property 'java_version', target.java
+        inputs.property 'mixin_java', target.mixin
+
+        filesMatching(['fabric.mod.json', 'bigdogbark.mixins.json']) {
+            expand(
+                    version: project.version,
+                    minecraft_version: target.minecraft,
+                    loader_dependency: rootProject.property('loader_dependency'),
+                    java_version: target.java,
+                    mixin_java: target.mixin
+            )
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = target.java
+    }
+}
+
+tasks.register('convertAudio') {
+    group = 'bigdogbark'
+    description = 'Converts root bigdog.mp3 and bark.mp3 to Minecraft-ready OGG Vorbis resources.'
+
+    doLast {
+        def ffmpeg = providers.exec {
+            commandLine 'sh', '-c', 'command -v ffmpeg'
+            ignoreExitValue = true
+        }.standardOutput.asText.get().trim()
+
+        if (!ffmpeg) {
+            throw new GradleException('ffmpeg is required. Install it, then run ./gradlew convertAudio again.')
+        }
+
+        def soundDir = layout.projectDirectory.dir('common/src/main/resources/assets/bigdogbark/sounds').asFile
+        soundDir.mkdirs()
+
+        [
+                'bigdog.mp3': 'bigdog.ogg',
+                'bark.mp3'  : 'bark.ogg'
+        ].each { sourceName, targetName ->
+            def source = layout.projectDirectory.file(sourceName).asFile
+            if (!source.isFile()) {
+                throw new GradleException("Missing ${sourceName} in the project root.")
+            }
+
+            exec {
+                commandLine ffmpeg, '-y', '-i', source.absolutePath, '-ac', '1', '-ar', '44100', '-c:a', 'libvorbis', '-q:a', '5', new File(soundDir, targetName).absolutePath
+            }
+        }
+    }
+}

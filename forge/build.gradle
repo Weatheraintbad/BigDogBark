@@ -1,0 +1,140 @@
+plugins {
+    id 'net.minecraftforge.gradle' version '6.0.54' apply false
+}
+
+def targets = [
+        'forge-1.20.1': [
+                minecraft             : '1.20.1',
+                forge                 : '47.4.10',
+                java                  : 17,
+                packFormat            : 15,
+                loaderVersionRange    : '[47,)',
+                forgeVersionRange     : '[47.4.10,)',
+                minecraftVersionRange : '[1.20.1,1.20.2)'
+        ],
+        'forge-1.21.1': [
+                minecraft             : '1.21.1',
+                forge                 : '52.0.27',
+                java                  : 21,
+                packFormat            : 34,
+                loaderVersionRange    : '[52,)',
+                forgeVersionRange     : '[52.0.27,)',
+                minecraftVersionRange : '[1.21.1,1.21.2)'
+        ]
+]
+
+allprojects {
+    group = property('maven_group')
+    version = property('mod_version')
+
+    repositories {
+        maven {
+            name = 'BigDogBarkLocalForgeCache'
+            url = rootProject.file('local_maven')
+        }
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            name = 'Mojang'
+            url = 'https://libraries.minecraft.net/'
+        }
+        mavenCentral()
+    }
+}
+
+subprojects {
+    def target = targets[project.name]
+
+    apply plugin: 'net.minecraftforge.gradle'
+    apply plugin: 'java'
+
+    base {
+        archivesName = "${rootProject.property('archives_base_name')}-${target.minecraft}"
+    }
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+        withSourcesJar()
+    }
+
+    minecraft {
+        mappings channel: 'official', version: target.minecraft
+
+        runs {
+            client {
+                workingDirectory project.file("../../run/${target.minecraft}")
+                property 'forge.logging.markers', 'REGISTRIES'
+                property 'forge.logging.console.level', 'debug'
+                mods {
+                    bigdogbark {
+                        source sourceSets.main
+                    }
+                }
+            }
+        }
+    }
+
+    sourceSets {
+        main {
+            java {
+                srcDirs = [
+                        "${rootProject.projectDir}/common/src/main/java",
+                        'src/main/java'
+                ]
+            }
+            resources {
+                srcDirs = [
+                        "${rootProject.projectDir}/common/src/main/resources",
+                        'src/main/resources'
+                ]
+            }
+        }
+    }
+
+    dependencies {
+        minecraft "net.minecraftforge:forge:${target.minecraft}-${target.forge}"
+    }
+
+    processResources {
+        inputs.property 'version', project.version
+        inputs.property 'java_version', target.java
+        inputs.property 'pack_format', target.packFormat
+        inputs.property 'loader_version_range', target.loaderVersionRange
+        inputs.property 'forge_version_range', target.forgeVersionRange
+        inputs.property 'minecraft_version_range', target.minecraftVersionRange
+
+        filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+            expand(
+                    version: project.version,
+                    java_version: target.java,
+                    pack_format: target.packFormat,
+                    loader_version_range: target.loaderVersionRange,
+                    forge_version_range: target.forgeVersionRange,
+                    minecraft_version_range: target.minecraftVersionRange
+            )
+        }
+    }
+
+    jar {
+        manifest {
+            attributes([
+                    'Specification-Title'     : 'bigdogbark',
+                    'Specification-Vendor'    : 'Weatheraintbad',
+                    'Specification-Version'   : '1',
+                    'Implementation-Title'    : project.name,
+                    'Implementation-Version'  : project.jar.archiveVersion,
+                    'Implementation-Vendor'   : 'Weatheraintbad',
+                    'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
+            ])
+        }
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        options.encoding = 'UTF-8'
+        options.release = target.java
+    }
+}

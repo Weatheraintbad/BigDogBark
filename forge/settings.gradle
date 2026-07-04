@@ -1,0 +1,36 @@
+pluginManagement {
+    repositories {
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositories {
+        maven {
+            name = 'BigDogBarkLocalForgeCache'
+            url = file('local_maven')
+        }
+        maven {
+            name = 'MinecraftForge'
+            url = 'https://maven.minecraftforge.net/'
+        }
+        maven {
+            name = 'Mojang'
+            url = 'https://libraries.minecraft.net/'
+        }
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'bigdogbark-forge'
+
+include 'forge-1.20.1'
+include 'forge-1.21.1'
+
+project(':forge-1.20.1').projectDir = file('versions/1.20.1')
+project(':forge-1.21.1').projectDir = file('versions/1.21.1')

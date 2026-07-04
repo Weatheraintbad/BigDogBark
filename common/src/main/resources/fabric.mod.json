@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "bigdogbark",
+  "version": "${version}",
+  "name": "Big Dog Bark",
+  "description": "将弓和三叉戟的蓄力和发射音效改为大狗叫 - Changed the charge and firing sound effects of bows and tridents to bigdogbark",
+  "authors": [
+    "Weatheraintbad"
+  ],
+  "contact": {},
+  "license": "MIT",
+  "icon": "icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.bigdogbark.BigDogBarkClient"
+    ]
+  },
+  "mixins": [
+    "bigdogbark.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "${loader_dependency}",
+    "minecraft": "${minecraft_version}",
+    "java": ">=${java_version}"
+  }
+}

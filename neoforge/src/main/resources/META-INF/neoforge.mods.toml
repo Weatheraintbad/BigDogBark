@@ -1,0 +1,26 @@
+modLoader="javafml"
+loaderVersion="${neoforge_loader_version_range}"
+license="MIT"
+
+[[mods]]
+modId="bigdogbark"
+version="${version}"
+displayName="Big Dog Bark"
+logoFile="icon.png"
+authors="Weatheraintbad"
+displayTest="IGNORE_SERVER_VERSION"
+description='''将弓和三叉戟的蓄力和发射音效改为大狗叫 - Changed the charge and firing sound effects of bows and tridents to bigdogbark'''
+
+[[dependencies.bigdogbark]]
+modId="neoforge"
+type="required"
+versionRange="${neoforge_version_range}"
+ordering="NONE"
+side="CLIENT"
+
+[[dependencies.bigdogbark]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="CLIENT"

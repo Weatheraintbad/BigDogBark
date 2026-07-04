@@ -1,0 +1,20 @@
+{
+  "bigdog": {
+    "subtitle": "subtitles.bigdogbark.bigdog",
+    "sounds": [
+      {
+        "name": "bigdogbark:bigdog",
+        "stream": false
+      }
+    ]
+  },
+  "bark": {
+    "subtitle": "subtitles.bigdogbark.bark",
+    "sounds": [
+      {
+        "name": "bigdogbark:bark",
+        "stream": false
+      }
+    ]
+  }
+}
