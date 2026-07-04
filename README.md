@@ -1,10 +1,16 @@
-# Big Dog Bark
+<div align="center">
+  
+<img width="1840" height="458" alt="bigdogbarkbanner" src="https://github.com/user-attachments/assets/880765b4-0245-4273-bfff-d2f472739330" />
+
+# 大狗大狗叫叫叫 - Big Dog Bark
 
 一个客户端 Minecraft 模组：将弓和三叉戟的蓄力和发射音效改为大狗叫。
 
 Changed the charge and firing sound effects of bows and tridents to bigdogbark.
 
-支持：
+</div>
+
+## 支持
 
 - Fabric `1.20.1` / `1.21.1`
 - Forge `1.20.1` / `1.21.1`
@@ -14,7 +20,7 @@ Changed the charge and firing sound effects of bows and tridents to bigdogbark.
 
 - 蓄力时重复播放 `bigdogbark:bigdog`
 - 第一次 `bigdog` 使用正常音调和速度
-- 蓄力越久，`bigdog` 的 pitch 越高，Minecraft 会同时让播放速度听起来更快
+- 蓄力越久，bigdog 的 pitch 越高，同时播放速度听起来更快
 - 相邻 `bigdog` 之间会重叠播放，正常 pitch 下约提前 `0.2s` 播放下一次，后续间隔随 pitch 提高继续缩短
 - 松开蓄力后播放 `bigdogbark:bark`
 - 不触发弩，仅处理弓和三叉戟
